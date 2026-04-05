@@ -14,7 +14,6 @@ Backend/.mvn/wrapper/maven-wrapper.jar
 .sts4-cache
 
 ### IntelliJ IDEA ###
-Backend/.idea
 *.iws
 *.iml
 *.ipr
@@ -33,3 +32,6 @@ build/
 .vscode/
 
 .idea/
+Frontend/node_modules/
+Frontend/dist/
+Backend/data/

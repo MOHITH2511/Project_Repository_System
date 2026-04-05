@@ -1,0 +1,579 @@
+{
+  "info": {
+    "name": "Project Repository System API",
+    "description": "Backend verification collection for Project Repository System.\n\nFlow:\n1) Register contributor/reviewer\n2) Login both and capture JWT\n3) Create project\n4) Upload document\n5) List/Search projects\n6) Submit project\n7) Review project\n\nCollection variables used:\n- baseUrl\n- contributorEmail, contributorPassword, contributorToken, contributorId\n- reviewerEmail, reviewerPassword, reviewerToken, reviewerId\n- projectId\n- idemKey",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "a32f2f9e-8c3b-4f29-a6bb-cf5b3d5d2d61"
+  },
+  "item": [
+    {
+      "name": "01 Register Contributor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Contributor User\",\n  \"email\": \"{{contributorEmail}}\",\n  \"password\": \"{{contributorPassword}}\",\n  \"role\": \"CONTRIBUTOR\",\n  \"department\": \"Computer Science\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Registers a contributor user."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Register contributor status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Contributor response has id/email', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.expect(body).to.have.property('email');",
+              "  pm.collectionVariables.set('contributorId', String(body.id));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Register Reviewer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Reviewer User\",\n  \"email\": \"{{reviewerEmail}}\",\n  \"password\": \"{{reviewerPassword}}\",\n  \"role\": \"REVIEWER\",\n  \"department\": \"Computer Science\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Registers a reviewer user."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Register reviewer status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Reviewer response has id/email', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.expect(body).to.have.property('email');",
+              "  pm.collectionVariables.set('reviewerId', String(body.id));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Login Contributor",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/login?email={{contributorEmail}}&password={{contributorPassword}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "{{contributorEmail}}"
+            },
+            {
+              "key": "password",
+              "value": "{{contributorPassword}}"
+            }
+          ]
+        },
+        "description": "Login currently accepts query params and returns JWT as plain string."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Contributor login status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Contributor token captured', function () {",
+              "  const token = pm.response.text().replace(/\"/g, '').trim();",
+              "  pm.expect(token.length).to.be.greaterThan(20);",
+              "  pm.collectionVariables.set('contributorToken', token);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Login Reviewer",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/login?email={{reviewerEmail}}&password={{reviewerPassword}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "{{reviewerEmail}}"
+            },
+            {
+              "key": "password",
+              "value": "{{reviewerPassword}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Reviewer login status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Reviewer token captured', function () {",
+              "  const token = pm.response.text().replace(/\"/g, '').trim();",
+              "  pm.expect(token.length).to.be.greaterThan(20);",
+              "  pm.collectionVariables.set('reviewerToken', token);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Create Project (Contributor)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{contributorToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman API Validation {{$timestamp}}\",\n  \"abstractText\": \"Validating backend flow before frontend integration\",\n  \"department\": \"Computer Science\",\n  \"academicYear\": \"2025-2026\",\n  \"technologyStack\": \"Java, Spring Boot, React\",\n  \"gitRepositoryUrl\": \"https://github.com/example/project-repo\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/projects",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "projects"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Create project status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Project id captured', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.collectionVariables.set('projectId', String(body.id));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Upload Document (Contributor)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{contributorToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"uploaderId\": {{contributorId}},\n  \"fileName\": \"report-v1.pdf\",\n  \"storagePath\": \"/files/report-v1.pdf\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{projectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "documents",
+            "{{projectId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Upload document status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Document version present', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('versionNumber');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 List Draft Projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{contributorToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/projects?status=DRAFT&page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "projects"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "DRAFT"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('List projects status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Page response has content array', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('content');",
+              "  pm.expect(body.content).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Search Projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{contributorToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/projects/search?department=Computer%20Science&page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "projects",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "department",
+              "value": "Computer Science"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Search projects status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Submit Project (expected 403 until member mapping exists)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('idemKey', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Submit returns 403 or 200 depending on project-member setup', function () {",
+              "  pm.expect([200, 403]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{contributorToken}}"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{idemKey}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/projects/{{projectId}}/submit",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "projects",
+            "{{projectId}}",
+            "submit"
+          ]
+        },
+        "description": "Current backend enforces project-member rule; without membership record this returns 403."
+      }
+    },
+    {
+      "name": "10 Review Project (runs after submit success)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{reviewerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reviewerId\": {{reviewerId}},\n  \"decision\": \"APPROVE\",\n  \"comment\": \"Approved during API verification\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews/{{projectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "{{projectId}}"
+          ]
+        },
+        "description": "Works only if project status is SUBMITTED; otherwise backend returns 400."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Review returns 200 or 400 based on project status', function () {",
+              "  pm.expect([200, 400]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Unauthorized Check (No Token)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/projects?status=DRAFT&page=0&size=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "projects"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "DRAFT"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Protected endpoint blocks unauthenticated access', function () {",
+              "  pm.expect([401, 403]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "contributorEmail",
+      "value": "contributor{{$timestamp}}@college.edu"
+    },
+    {
+      "key": "contributorPassword",
+      "value": "Pass@123"
+    },
+    {
+      "key": "contributorToken",
+      "value": ""
+    },
+    {
+      "key": "contributorId",
+      "value": ""
+    },
+    {
+      "key": "reviewerEmail",
+      "value": "reviewer{{$timestamp}}@college.edu"
+    },
+    {
+      "key": "reviewerPassword",
+      "value": "Pass@123"
+    },
+    {
+      "key": "reviewerToken",
+      "value": ""
+    },
+    {
+      "key": "reviewerId",
+      "value": ""
+    },
+    {
+      "key": "projectId",
+      "value": ""
+    },
+    {
+      "key": "idemKey",
+      "value": ""
+    }
+  ]
+}
