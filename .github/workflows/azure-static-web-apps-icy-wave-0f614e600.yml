@@ -1,5 +1,8 @@
 name: Azure Static Web Apps CI/CD
 
+env:
+  VITE_API_BASE_URL: https://projectrepo-api-grbgejddgkccbsdp.centralindia-01.azurewebsites.net
+
 on:
   push:
     branches:
@@ -45,3 +48,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ICY_WAVE_0F614E600 }}
           action: "close"
+
