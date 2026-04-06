@@ -11,6 +11,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
     Page<Project> findByStatus(ProjectStatus status, Pageable pageable);
 
+    Page<Project> findByFacultyGuideId(Long facultyGuideId, Pageable pageable);
+
+    Page<Project> findByFacultyGuideIdAndStatus(Long facultyGuideId, ProjectStatus status, Pageable pageable);
+
     Page<Project> findByDepartment(String department, Pageable pageable);
 
     long countByCreatedAtAfter(LocalDateTime createdAt);

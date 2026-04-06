@@ -95,9 +95,18 @@ public class ProjectController {
     public Page<Project> listProjects(
             @RequestParam(required = false) ProjectStatus status,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(defaultValue = "false") boolean assignedToMe,
+                        Authentication authentication) {
 
-        return projectService.getProjects(status, page, size);
+                if (!assignedToMe) {
+                        return projectService.getProjects(status, page, size);
+                }
+
+                User currentUser = userRepository.findByEmail(authentication.getName())
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                return projectService.getProjectsAssignedToReviewer(currentUser, status, page, size);
     }
 
     @GetMapping("/{projectId}")

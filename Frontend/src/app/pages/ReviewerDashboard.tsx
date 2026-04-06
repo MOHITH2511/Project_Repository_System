@@ -17,6 +17,7 @@ import { StatusBadge } from "../components/StatusBadge";
 import { Badge } from "../components/ui/badge";
 import { ApiError } from "../api/client";
 import { listProjects, mapBackendProjectToUiProject } from "../api/projectApi";
+import { getCurrentUser } from "../api/session";
 import type { UiProject } from "../api/types";
 
 export function ReviewerDashboard() {
@@ -33,7 +34,9 @@ export function ReviewerDashboard() {
       setError(null);
 
       try {
-        const response = await listProjects(undefined, 0, 200);
+        const currentUser = getCurrentUser();
+        const assignedToMe = currentUser?.role === 'REVIEWER';
+        const response = await listProjects(undefined, 0, 200, assignedToMe);
         setAllProjects(response.content.map(mapBackendProjectToUiProject));
       } catch (err) {
         if (err instanceof ApiError) {

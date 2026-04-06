@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import com.projectrepo.projectreposystem.domain.model.*;
 import com.projectrepo.projectreposystem.exception.InvalidStateTransitionException;
 import com.projectrepo.projectreposystem.exception.ProjectNotFoundException;
+import com.projectrepo.projectreposystem.exception.UnauthorizedActionException;
 import com.projectrepo.projectreposystem.repository.IdempotencyRecordRepository;
 import com.projectrepo.projectreposystem.repository.ProjectMemberRepository;
 import com.projectrepo.projectreposystem.repository.ProjectRepository;
@@ -243,6 +244,32 @@ public class ProjectService {
 
                 return projectRepository.findByStatus(status, pageable);
     }
+
+        public Page<Project> getProjectsAssignedToReviewer(User reviewer,
+                                                                                                           ProjectStatus status,
+                                                                                                           int page,
+                                                                                                           int size) {
+
+                Pageable pageable = PageRequest.of(
+                                page,
+                                size,
+                                Sort.by("createdAt").descending()
+                );
+
+                if (reviewer.getRole() == UserRole.ADMIN) {
+                        return getProjects(status, page, size);
+                }
+
+                if (reviewer.getRole() != UserRole.REVIEWER) {
+                        throw new UnauthorizedActionException("Only REVIEWER can query assigned projects");
+                }
+
+                if (status == null) {
+                        return projectRepository.findByFacultyGuideId(reviewer.getId(), pageable);
+                }
+
+                return projectRepository.findByFacultyGuideIdAndStatus(reviewer.getId(), status, pageable);
+        }
 
         public Project getProjectById(Long projectId) {
                 return projectRepository.findById(projectId)

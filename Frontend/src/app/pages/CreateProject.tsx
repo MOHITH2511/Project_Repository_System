@@ -11,6 +11,7 @@ import { ArrowLeft, Save, Send } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { ApiError } from "../api/client";
 import { createProject, submitProject } from "../api/projectApi";
+import { uploadProjectDocument } from "../api/documentApi";
 import { searchUsers } from "../api/userApi";
 import type { AuthUser } from "../api/types";
 
@@ -38,6 +39,7 @@ export function CreateProject() {
   const [isTeamLoading, setIsTeamLoading] = useState(false);
   const [teamSearchAttempted, setTeamSearchAttempted] = useState(false);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<AuthUser[]>([]);
+  const [selectedDocument, setSelectedDocument] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -137,6 +139,16 @@ export function CreateProject() {
     teamMemberIds: selectedTeamMembers.map((member) => member.id),
   });
 
+  const createProjectWithOptionalDocument = async () => {
+    const created = await createProject(buildCreatePayload());
+
+    if (selectedDocument) {
+      await uploadProjectDocument(created.id, selectedDocument);
+    }
+
+    return created;
+  };
+
   const handleSaveDraft = async () => {
     const validationError = validateForm();
     if (validationError) {
@@ -148,7 +160,7 @@ export function CreateProject() {
     setError(null);
 
     try {
-      await createProject(buildCreatePayload());
+      await createProjectWithOptionalDocument();
       navigate("/contributor");
     } catch (err) {
       if (err instanceof ApiError) {
@@ -172,7 +184,7 @@ export function CreateProject() {
     setError(null);
 
     try {
-      const created = await createProject(buildCreatePayload());
+      const created = await createProjectWithOptionalDocument();
       await submitProject(created.id, crypto.randomUUID());
       navigate("/contributor");
     } catch (err) {
@@ -326,6 +338,34 @@ export function CreateProject() {
               onChange={(e) => handleInputChange('gitRepository', e.target.value)}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Initial Document */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Initial Project Document</CardTitle>
+          <CardDescription>
+            Upload an optional document that will be attached after the project is created
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="initialDocument">Project Document</Label>
+            <Input
+              id="initialDocument"
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setSelectedDocument(file);
+              }}
+            />
+          </div>
+          {selectedDocument && (
+            <p className="text-sm text-gray-600">
+              Selected file: <span className="font-medium">{selectedDocument.name}</span>
+            </p>
+          )}
         </CardContent>
       </Card>
 

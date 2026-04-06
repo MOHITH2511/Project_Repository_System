@@ -56,13 +56,17 @@ export function getProjectById(projectId: number): Promise<BackendProject> {
   });
 }
 
-export function listProjects(status?: ProjectStatus, page = 0, size = 20): Promise<PageResponse<BackendProject>> {
+export function listProjects(status?: ProjectStatus, page = 0, size = 20, assignedToMe = false): Promise<PageResponse<BackendProject>> {
   const params = new URLSearchParams();
   params.set('page', String(page));
   params.set('size', String(size));
 
   if (status) {
     params.set('status', status);
+  }
+
+  if (assignedToMe) {
+    params.set('assignedToMe', 'true');
   }
 
   return apiRequest<PageResponse<BackendProject>>(`/projects?${params.toString()}`, {
