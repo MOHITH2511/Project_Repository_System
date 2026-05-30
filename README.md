@@ -1,119 +1,288 @@
-# Project Repository System
+# 🚀 Project Repository System
 
-## Overview
+<div align="center">
 
-Project Repository System is a web-based Project Lifecycle Management Platform designed to manage academic projects through a structured, role-based workflow.  
-The system replaces manual project tracking with a centralized, secure, and searchable repository.
+![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=springboot)
+![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql)
+![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?style=for-the-badge&logo=microsoftazure)
 
-The platform focuses on governance, traceability, and long-term knowledge retention rather than simple file storage.
 
----
-
-## Problem Statement
-
-Academic projects are often managed using fragmented and manual processes, resulting in:
-
-- Poor visibility of project status
-- Lack of version control for submissions
-- Inconsistent review workflows
-- Limited historical traceability
-- Difficulty retrieving past projects
-
-This system introduces a structured lifecycle model with secure access controls and auditability.
+</div>
 
 ---
 
-## Core Features
+## 📖 Overview
 
-- User Authentication & Authorization (JWT-based)
-- Role-Based Access Control (RBAC)
-- Project Lifecycle Management
-- Versioned Document Submissions
-- Faculty Review Workflow
-- Searchable Project Repository
-- Git Repository Linking
-- Audit Logging & Traceability
-- Administrative Controls
+Project Repository System is a workflow-driven project lifecycle management platform designed to streamline academic project submission, review, approval, and repository management.
 
----
+The system replaces fragmented manual processes such as spreadsheets, emails, and paper-based tracking with a centralized platform that ensures secure collaboration, project traceability, structured reviews, and efficient project discovery.
 
-## Technology Stack
+### 🎯 Key Challenges Addressed
 
-**Backend**
-- Java
-- Spring Boot
-- Spring Web (REST APIs)
-- Spring Data JPA
-- Hibernate (ORM)
-- Spring Security
-
-**Database**
-- PostgreSQL (or MySQL)
-
-**Build Tool**
-- Maven
-
-**Authentication Mechanism**
-- JWT (JSON Web Tokens)
+- Manual project submission workflows
+- Lack of project visibility
+- Unstructured review processes
+- Missing audit trails
+- Difficulty finding approved projects
+- Unauthorized project access
+- Duplicate submissions
+- Inconsistent workflow transitions
 
 ---
 
-## System Architecture
+## 📸 Application Screenshots
 
-The system follows a layered architecture within a modular monolithic design.
+<div align="center">
 
-**High-Level Flow**
+### 🔐 Authentication & Login
 
-Client → REST API → Controller → Service → Repository → Database
+![login.png](screenshots/login.png)
 
-Key architectural principles:
+### 📊 Dashboard
 
-- Separation of concerns
-- Stateless request handling
-- Centralized dependency management
-- Scalable security model
-- Extensible API design
+![dashboard.png](screenshots/dashboard.png)
 
-(Architecture diagram included in `/docs`)
+### 📁 Project Repository
 
----
+![repository.png](screenshots/repository.png)
 
-## Database Design Philosophy
+### 📝 Review Workflow
 
-The data model is designed to support:
+![Workflow](screenshots/workflow.png)
 
-- Clear entity relationships
-- Lifecycle state transitions
-- Version tracking
-- Auditability of actions
-- Future scalability
+### 👨‍💼 Admin Panel
 
-Primary entities include:
+![admin_dashboard1.png](screenshots/admin_dashboard1.png)
+![admin_dashboard2.png](screenshots/admin_dashboard2.png)
 
-- User
-- Project
-- ProjectVersion
-- Review
-- AuditLog
-
-(ER Diagram included in `/docs`)
+</div>
 
 ---
 
-## Setup Instructions
+## 🛠️ Tech Stack
+
+### Backend
+
+- **Java 17**
+- **Spring Boot**
+- **Spring Security**
+- **Spring Data JPA**
+- **Hibernate**
+- **Maven**
+
+### Frontend
+
+- **React**
+- **TypeScript**
+- **Vite**
+- **Axios**
+
+### Database
+
+- **MySQL**
+
+### Security
+
+- **JWT Authentication**
+- **Role-Based Access Control (RBAC)**
+- **Domain-Level Authorization**
+
+### Cloud & Deployment
+
+- **Azure App Service**
+- **Azure Static Web Apps**
+- **Railway MySQL**
+
+---
+
+## ✨ Core Features
+
+### 🔐 Authentication & Authorization
+
+- JWT-based Authentication
+- Secure API Access
+- Role-Based Access Control
+- Domain-Level Authorization
+- Stateless Session Management
+
+### 📁 Project Lifecycle Management
+
+- Project Creation and Management
+- Draft Management
+- Project Submission Workflow
+- Reviewer Assignment
+- Review and Approval Process
+- Status Tracking
+- Backend-Enforced State Transitions
+
+### 📚 Approved Project Repository
+
+- Searchable Approved Projects
+- Centralized Repository
+- Historical Project Records
+- Knowledge Reuse and Discovery
+
+### 📊 Search & Filtering
+
+- Pagination Support
+- Dynamic Filtering
+- JPA Specification Queries
+- Optimized Search Performance
+
+### 🛡️ Reliability & Data Integrity
+
+- Optimistic Locking
+- Idempotent Submission Handling
+- Concurrency Control
+- Data Validation
+- Consistent Workflow Enforcement
+
+### 📋 Audit & Traceability
+
+- Audit Logging
+- Activity Tracking
+- Review History
+- State Transition Logs
+- Complete Project Traceability
+
+---
+
+## 🔄 Project Workflow
+
+```text
+DRAFT
+  │
+  ▼
+SUBMITTED
+  │
+  ▼
+UNDER_REVIEW
+  │
+  ├────────► APPROVED
+  │
+  └────────► REJECTED
+                  │
+                  ▼
+            EDIT & RESUBMIT
+```
+
+---
+
+## 🏗️ System Architecture
+
+```text
+┌────────────────────┐
+│ React + TypeScript │
+│      Frontend      │
+└─────────┬──────────┘
+          │ REST API
+          ▼
+┌────────────────────┐
+│    Spring Boot     │
+│      Backend       │
+└─────────┬──────────┘
+          ▼
+┌────────────────────┐
+│ Spring Data JPA    │
+│   Repositories     │
+└─────────┬──────────┘
+          ▼
+┌────────────────────┐
+│       MySQL        │
+│     Database       │
+└────────────────────┘
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+project-repository-system/
+│
+├── backend/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── entities/
+│   ├── security/
+│   └── audit/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── hooks/
+│
+├── screenshots/
+│
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Java 17+ (recommended)
+- Java 17+
 - Maven
-- PostgreSQL / MySQL
-- Git
+- Node.js 18+
+- MySQL 8+
+
+### Backend Setup
+
+```bash
+cd backend
+mvn clean install
+mvn spring-boot:run
+```
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
-### Steps to Run
+## 🌐 Deployment
 
-1. Clone the repository
+### Backend
 
-   ```bash
-   git clone <repository_url>
+- Azure App Service
+
+### Frontend
+
+- Azure Static Web Apps
+
+### Database
+
+- Railway MySQL
+
+---
+
+## 🔮 Future Enhancements
+
+- Real-Time Notifications
+- Analytics Dashboard
+- Mobile Application Support
+- Multi-Level Review Workflow
+- Recommendation System
+- Academic ERP Integration
+
+---
+
+<div align="center">
+
+Made with ❤️ by <a href="https://github.com/MOHITH2511">Mohit</a>
+
+If you found this project useful, consider giving it a star!⭐
+
+</div>
