@@ -51,7 +51,7 @@ The system replaces fragmented manual processes such as spreadsheets, emails, an
 
 ### 📝 Review Workflow
 
-![Workflow](screenshots/workflow.png)
+![review.png](screenshots/review.png)
 
 ### 👨‍💼 Admin Panel
 
